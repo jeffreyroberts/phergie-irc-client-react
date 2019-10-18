@@ -81,6 +81,13 @@ class Client extends EventEmitter implements
      * @var \SplObjectStorage
      */
     protected $activeConnections;
+        
+    /**
+     * In memory arbitrary data storage
+     *
+     * @var \Array
+     */
+    protected $dataStorage;
 
     /**
      * Sets the event loop dependency.
@@ -206,7 +213,70 @@ class Client extends EventEmitter implements
     {
         return $this->activeConnections ? iterator_to_array($this->activeConnections, false) : array();
     }
-
+        
+    /**
+     * Reads a key from the in memory arbitrary data storage
+     *
+     * @param \String $dataStorageKey
+     *
+     * @return \Array
+     */
+    public function readDataStorage($dataStorageKey)
+    {
+        $dataStorageKeys = explode('.', $dataStorageKey);
+        
+        if(count($dataStorageKeys) > 0) { 
+            
+            $currentLevel = $this->dataStorage[$dataStorageKeys[0]];
+            
+            array_shift($dataStorageKeys);
+            
+            foreach($dataStorageKeys as $storageKey) { 
+                
+                $currentLevel = $currentLevel[$storageKey];
+            }
+            
+            return $currentLevel;
+        }
+        else {
+            
+            return [];
+        }
+    }
+        
+    /**
+     * Write a key and value to the in memory arbitrary data storage
+     *
+     * @param \String $dataStorageKey
+     * @param \String|\Array $dataStorageValue
+     */
+    public function writeDataStorage($dataStorageKey, $dataStorageValue)
+    {
+        $dataStorageKeys = explode('.', $dataStorageKey);
+        
+        if(count($dataStorageKeys) > 1) { 
+            
+            $currentLevel = &$this->dataStorage[$dataStorageKeys[0]];
+            
+            array_shift($dataStorageKeys);
+            $lastKey = $dataStorageKeys[count($dataStorageKeys) - 1];
+            
+            foreach($dataStorageKeys as $storageKey) { 
+                
+                if($storageKey != $lastKey) { 
+                    $currentLevel = &$currentLevel[$storageKey];
+                }
+                else {
+                    $currentLevel[$storageKey] = $dataStorageValue;
+                }
+            }
+        }
+        else if(count($dataStorageKeys) == 1) { 
+            
+            $this->dataStorage[$dataStorageKeys[0]] = $dataStorageValue;
+        }
+    }
+        
     /**
      * Returns a socket configured for a specified remote.
      *
