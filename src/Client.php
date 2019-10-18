@@ -276,7 +276,40 @@ class Client extends EventEmitter implements
             $this->dataStorage[$dataStorageKeys[0]] = $dataStorageValue;
         }
     }
-        
+    
+    /**
+     * Delete a key and value from the in memory arbitrary data storage
+     *
+     * @param \String $dataStorageKey
+     * @param \String|\Array $dataStorageValue
+     */
+    public function deleteDataStorage($dataStorageKey)
+    {
+        $dataStorageKeys = explode('.', $dataStorageKey);
+
+        if(count($dataStorageKeys) > 1) {
+
+            $currentLevel = &$this->dataStorage[$dataStorageKeys[0]];
+
+            array_shift($dataStorageKeys);
+            $lastKey = $dataStorageKeys[count($dataStorageKeys) - 1];
+
+            foreach($dataStorageKeys as $storageKey) {
+
+                if($storageKey != $lastKey) {
+                    $currentLevel = &$currentLevel[$storageKey];
+                }
+                else {
+                    unset($currentLevel[$storageKey]);
+                }
+            }
+        }
+        else if(count($dataStorageKeys) == 1) {
+
+            unset($this->dataStorage[$dataStorageKeys[0]]);
+        }
+    }
+
     /**
      * Returns a socket configured for a specified remote.
      *
