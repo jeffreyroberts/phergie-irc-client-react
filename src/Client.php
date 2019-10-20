@@ -233,14 +233,20 @@ class Client extends EventEmitter implements
             
             foreach($dataStorageKeys as $storageKey) { 
                 
-                $currentLevel = $currentLevel[$storageKey];
+                if(isset($currentLevel[$storageKey])) {
+                    $currentLevel = $currentLevel[$storageKey];
+                }
+                else {
+
+                    return null;
+                }
             }
             
             return $currentLevel;
         }
         else {
             
-            return [];
+            return null;
         }
     }
         
