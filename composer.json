@@ -1,5 +1,5 @@
 {
-    "name": "phergie/phergie-irc-client-react",
+    "name": "jeffreyroberts/phergie-irc-client-react",
     "description": "IRC client library built on React",
     "keywords": [ "irc", "client", "react" ],
     "license": "BSD-2-Clause",
